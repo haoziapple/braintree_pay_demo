@@ -53,7 +53,7 @@ public class Checkout
 		String nonce = request.getParameter("payment_method_nonce");
 		
 		TransactionRequest Trequest = new TransactionRequest()
-	    .amount(new BigDecimal("100.00"))
+	    .amount(new BigDecimal("10.00"))
 	    .paymentMethodNonce(nonce)
 	    .options()
 	      .submitForSettlement(true)
@@ -63,10 +63,16 @@ public class Checkout
 		
 		//返回信息
 		String str;
+		
+		//调用支付api成功
 		if(result.isSuccess())
 		{
 			Transaction transaction=result.getTarget();
 			String Id = transaction.getId();
+			
+			//将交易状态改为settled
+			FunctionTest.setTranSettled(Id);
+			
 			String status = transaction.getStatus().toString();
 			str = Id + status;
 		}
