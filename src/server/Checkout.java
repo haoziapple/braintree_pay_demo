@@ -51,34 +51,42 @@ public class Checkout
 	{
 		// 返回结果
 		String nonce = request.getParameter("payment_method_nonce");
-		
-		TransactionRequest Trequest = new TransactionRequest()
-	    .amount(new BigDecimal("10.00"))
-	    .paymentMethodNonce(nonce)
-	    .options()
-	      .submitForSettlement(true)
-	      .done();
+
+		System.out.println(request.getParameter("orderId"));
+		System.out.println(request.getParameter("amount"));
+		System.out.println(nonce);
+
+		TransactionRequest Trequest = new TransactionRequest().orderId("testOrderId11111")
+				.amount(new BigDecimal("10.00")).paymentMethodNonce(nonce).options().submitForSettlement(true).done();
 
 		Result<Transaction> result = TokenGenerator.gateway.transaction().sale(Trequest);
-		
-		//返回信息
+
+		// 返回信息
 		String str;
-		
-		//调用支付api成功
-		if(result.isSuccess())
+
+		// 调用支付api成功
+		if (result.isSuccess())
 		{
-			Transaction transaction=result.getTarget();
+			Transaction transaction = result.getTarget();
 			String Id = transaction.getId();
-			
-			//将交易状态改为settled
-			FunctionTest.setTranSettled(Id);
-			
+
+			// 将交易状态改为settled
+			System.out.println("查询交易流水号： " + transaction.getId());
+			System.out.println("交易类型： " + transaction.getType());
+			System.out.println("支付工具： " + transaction.getPaymentInstrumentType());
+			System.out.println("信用卡类型： " + transaction.getCreditCard().getCardType());
+			System.out.println("信用卡前六位号码： "+transaction.getCreditCard().getBin());
+			System.out.println("信用卡后四位号码： "+transaction.getCreditCard().getLast4());
+			System.out.println("持卡人姓名： "+transaction.getCreditCard().getCardholderName());
+			System.out.println("有效日期： "+transaction.getCreditCard().getExpirationDate());
+			System.out.println("信用卡部分卡号： "+transaction.getCreditCard().getMaskedNumber());
+			System.out.println("IssuingBank： "+transaction.getCreditCard().getIssuingBank());
+
 			String status = transaction.getStatus().toString();
 			str = Id + status;
-		}
-		else
+		} else
 		{
-			//调用支付api失败，打印错误
+			// 调用支付api失败，打印错误
 			ValidationErrors errors = result.getErrors();
 			for (ValidationError error : errors.getAllDeepValidationErrors())
 			{
@@ -86,12 +94,17 @@ public class Checkout
 				System.out.println(error.getCode());
 				System.out.println(error.getMessage());
 			}
-			str=result.getMessage();
+			str = result.getMessage();
 		}
 
 		response.setContentType("application/json;charset=UTF-8");
 		response.getOutputStream().write(str.getBytes("UTF-8"));
 
+	}
+
+	public static void main(String[] args)
+	{
+		FunctionTest.setTranSettled("29576s");
 	}
 
 }

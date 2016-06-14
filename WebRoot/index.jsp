@@ -1,6 +1,9 @@
 <form id="checkout" method="post" action="/pay_demo/checkout">
 	<div id="payment-form"></div>
 	<input type="submit" value="Pay $10">
+	<input value="1111" type="text" name="orderId">
+	<input value="10" type="text" name="amount">
+	
 </form>
 
 <script src="https://js.braintreegateway.com/js/braintree-2.22.2.min.js"></script>
